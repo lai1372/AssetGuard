@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'assetguard-6407e.firebasestorage.app',
     iosBundleId: 'com.example.assetGuard',
   );
+
 }
