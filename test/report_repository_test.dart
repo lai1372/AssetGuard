@@ -51,4 +51,39 @@ void main() {
       expect(() => reportRepository.getAllReports(), throwsException);
     });
   });
+
+  group('createReport',(){
+    test('creates a new report', () async {
+      // Arrange
+      final title = 'New Report';
+      final description = 'This is a new report';
+      final mockReport = Report(id: '3', title: title, description: description);
+
+      when(mockApiClient.createReport(any, any)).thenAnswer((_) async => mockReport);
+
+      // Act
+      final result = await reportRepository.createReport(title, description);
+
+      // Assert
+      expect(result.id, '3');
+      expect(result.title, title);
+      expect(result.description, description);
+      verify(mockApiClient.createReport(any, any)).called(1);
+    });
+      test('throws exception when API call fails', () async {
+
+        // Arrange
+        final title = 'New Report';
+        final description = 'This is a new report';
+
+        when(mockApiClient.createReport(title, description)).thenThrow(Exception('Network error'));
+
+        // Act
+        final result = reportRepository.createReport(title, description);
+        
+        // Assert
+        expect(result, throwsException);
+      });
+  }
+);
 }

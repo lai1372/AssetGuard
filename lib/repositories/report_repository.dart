@@ -9,4 +9,9 @@ class ReportRepository {
   Future<List<Report>> getAllReports() async {
     return await apiClient.getAllReports();
   }
+
+  Future<Report> createReport(String title, String description) async {
+    return await apiClient.createReport(title, description);
+  }
+  
 }
