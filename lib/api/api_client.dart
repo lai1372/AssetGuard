@@ -5,7 +5,17 @@ class ApiClient {
     // TODO: Implement API call
     throw UnimplementedError();
   }
+
   Future<Report> createReport(String title, String description) async {
+    // TODO: Implement API call
+    throw UnimplementedError();
+  }
+
+  Future<Report> updateReport(
+    String id,
+    String title,
+    String description,
+  ) async {
     // TODO: Implement API call
     throw UnimplementedError();
   }
