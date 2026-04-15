@@ -19,4 +19,9 @@ class ApiClient {
     // TODO: Implement API call
     throw UnimplementedError();
   }
+
+  Future<void> deleteReport(String id) async {
+    // TODO: Implement API call
+    throw UnimplementedError();
+  }
 }

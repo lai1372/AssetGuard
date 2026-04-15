@@ -17,4 +17,9 @@ class ReportRepository {
   Future<Report> updateReport(String id, String title, String description) async {
     return await apiClient.updateReport(id, title, description);
   }
+
+  Future<void> deleteReport(String id) async {
+    return await apiClient.deleteReport(id);
+  }
+
 }

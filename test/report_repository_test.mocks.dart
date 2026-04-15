@@ -74,4 +74,13 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
             ),
           )
           as _i4.Future<_i2.Report>);
+
+  @override
+  _i4.Future<void> deleteReport(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteReport, [id]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

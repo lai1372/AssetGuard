@@ -137,4 +137,36 @@ void main() {
       expect(result, throwsException);
     });
   });
+
+  group('deleteReport', () {
+    test('deletes an existing report', () async {
+      // Arrange
+      final id = '1';
+
+      when(
+        mockApiClient.deleteReport(id),
+      ).thenAnswer((_) async => Future.value());
+
+      // Act
+      await reportRepository.deleteReport(id);
+
+      // Assert
+      verify(mockApiClient.deleteReport(id)).called(1);
+    });
+
+    test('throws exception when API call fails', () async {
+      // Arrange
+      final id = '1';
+
+      when(
+        mockApiClient.deleteReport(id),
+      ).thenThrow(Exception('Network error'));
+
+      // Act
+      final result = reportRepository.deleteReport(id);
+
+      // Assert
+      expect(result, throwsException);
+    });
+  });
 }
