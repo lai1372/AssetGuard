@@ -39,7 +39,7 @@ void main() {
       expect(result[0].title, 'Report 1');
       expect(result[1].title, 'Report 2');
     });
-    
+
     test('returns empty list when no reports exist', () async {
       when(mockApiClient.getAllReports()).thenAnswer((_) async => []);
       final result = await reportRepository.getAllReports();
@@ -52,14 +52,20 @@ void main() {
     });
   });
 
-  group('createReport',(){
+  group('createReport', () {
     test('creates a new report', () async {
       // Arrange
       final title = 'New Report';
       final description = 'This is a new report';
-      final mockReport = Report(id: '3', title: title, description: description);
+      final mockReport = Report(
+        id: '3',
+        title: title,
+        description: description,
+      );
 
-      when(mockApiClient.createReport(any, any)).thenAnswer((_) async => mockReport);
+      when(
+        mockApiClient.createReport(any, any),
+      ).thenAnswer((_) async => mockReport);
 
       // Act
       final result = await reportRepository.createReport(title, description);
@@ -70,20 +76,65 @@ void main() {
       expect(result.description, description);
       verify(mockApiClient.createReport(any, any)).called(1);
     });
-      test('throws exception when API call fails', () async {
 
-        // Arrange
-        final title = 'New Report';
-        final description = 'This is a new report';
+    test('throws exception when API call fails', () async {
+      // Arrange
+      final title = 'New Report';
+      final description = 'This is a new report';
 
-        when(mockApiClient.createReport(title, description)).thenThrow(Exception('Network error'));
+      when(
+        mockApiClient.createReport(title, description),
+      ).thenThrow(Exception('Network error'));
 
-        // Act
-        final result = reportRepository.createReport(title, description);
-        
-        // Assert
-        expect(result, throwsException);
-      });
-  }
-);
+      // Act
+      final result = reportRepository.createReport(title, description);
+
+      // Assert
+      expect(result, throwsException);
+    });
+  });
+
+  group('updateReport', () {
+    test('updates an existing report', () async {
+      // Arrange
+      final id = '1';
+      final title = 'Updated Report';
+      final description = 'This is an updated report';
+      final mockReport = Report(id: id, title: title, description: description);
+
+      when(
+        mockApiClient.updateReport(any, any, any),
+      ).thenAnswer((_) async => mockReport);
+
+      // Act
+      final result = await reportRepository.updateReport(
+        id,
+        title,
+        description,
+      );
+
+      // Assert
+      expect(result.id, id);
+      expect(result.title, title);
+      expect(result.description, description);
+      verify(mockApiClient.updateReport(any, any, any)).called(1);
+    });
+
+    test('throws exception when API call fails', () async {
+      // Arrange
+      final id = '1';
+      final title = 'Updated Report';
+      final description = 'This is an updated report';
+
+      when(
+        mockApiClient.updateReport(id, title, description),
+      ).thenThrow(Exception('Network error'));
+
+      // Act
+      final result = reportRepository.updateReport(id, title, description);
+
+      // Assert
+      expect(result, throwsException);
+    });
+  });
 }

@@ -14,4 +14,7 @@ class ReportRepository {
     return await apiClient.createReport(title, description);
   }
   
+  Future<Report> updateReport(String id, String title, String description) async {
+    return await apiClient.updateReport(id, title, description);
+  }
 }

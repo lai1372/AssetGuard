@@ -57,4 +57,21 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
             ),
           )
           as _i4.Future<_i2.Report>);
+
+  @override
+  _i4.Future<_i2.Report> updateReport(
+    String? id,
+    String? title,
+    String? description,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateReport, [id, title, description]),
+            returnValue: _i4.Future<_i2.Report>.value(
+              _FakeReport_0(
+                this,
+                Invocation.method(#updateReport, [id, title, description]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Report>);
 }
