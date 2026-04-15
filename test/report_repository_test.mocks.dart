@@ -3,10 +3,10 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
-import 'package:asset_guard/api/api_client.dart' as _i2;
-import 'package:asset_guard/models/report.dart' as _i4;
+import 'package:asset_guard/api/api_client.dart' as _i3;
+import 'package:asset_guard/models/report.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -24,19 +24,37 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: subtype_of_sealed_class
 // ignore_for_file: invalid_use_of_internal_member
 
+class _FakeReport_0 extends _i1.SmartFake implements _i2.Report {
+  _FakeReport_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [ApiClient].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockApiClient extends _i1.Mock implements _i2.ApiClient {
+class MockApiClient extends _i1.Mock implements _i3.ApiClient {
   MockApiClient() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<List<_i4.Report>> getAllReports() =>
+  _i4.Future<List<_i2.Report>> getAllReports() =>
       (super.noSuchMethod(
             Invocation.method(#getAllReports, []),
-            returnValue: _i3.Future<List<_i4.Report>>.value(<_i4.Report>[]),
+            returnValue: _i4.Future<List<_i2.Report>>.value(<_i2.Report>[]),
           )
-          as _i3.Future<List<_i4.Report>>);
+          as _i4.Future<List<_i2.Report>>);
+
+  @override
+  _i4.Future<_i2.Report> createReport(String? title, String? description) =>
+      (super.noSuchMethod(
+            Invocation.method(#createReport, [title, description]),
+            returnValue: _i4.Future<_i2.Report>.value(
+              _FakeReport_0(
+                this,
+                Invocation.method(#createReport, [title, description]),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Report>);
 }
