@@ -152,4 +152,49 @@ void main() {
 
     });
   });
+
+  group('ApiClient Integration Tests - deleteReport', () {
+    late FakeFirebaseFirestore fakeFirestore;
+    late ApiClient apiClient;
+
+    setUp(() {
+      fakeFirestore = FakeFirebaseFirestore();
+      apiClient = ApiClient(fakeFirestore);
+    });
+
+    test('soft deletes a report and logs audit', () async {
+      // Arrange
+      await fakeFirestore.collection('reports').doc('1').set({
+        'id': '1',
+        'title': 'Report 1',
+        'description': 'Description 1',
+        'isDeleted': false,
+        'createdAt': '2024-01-01T10:00:00.000Z',
+        'updatedAt': '2024-01-01T10:00:00.000Z',
+      });
+
+      // Act
+      await apiClient.deleteReport('1');
+
+      // Assert
+      final docSnapshot = await fakeFirestore.collection('reports').doc('1').get();
+      expect(docSnapshot.exists, true);
+      expect(docSnapshot.data()!['isDeleted'], true);
+
+      // Assert
+      final auditLogsSnapshot = await fakeFirestore.collection('audit_logs').where('reportId', isEqualTo: '1').get();
+      expect(auditLogsSnapshot.docs.length, 1);
+      expect(auditLogsSnapshot.docs.first.data()['action'], 'delete');
+    });
+
+    test('throws exception when report does not exist', () async {
+      // Arrange 
+      final docSnapshot = await fakeFirestore.collection('reports').doc('nonexistent').get();
+
+      expect(docSnapshot.exists, false);
+
+      // Act & Assert
+      expect(() => apiClient.deleteReport('nonexistent'), throwsException);
+    });
+  });
 }
