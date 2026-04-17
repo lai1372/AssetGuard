@@ -15,9 +15,7 @@ class ApiClient {
 
   Future<List<Report>> getAllReports() async {
     debugPrint('[API] GET /reports - fetching all reports');
-    final snapshot = await _reports
-        .where('isDeleted', isEqualTo: false)
-        .get();
+    final snapshot = await _reports.where('isDeleted', isEqualTo: false).get();
     debugPrint(
       '[API] GET /reports - fetched ${snapshot.docs.length} reports${snapshot.metadata.isFromCache ? ' (from local storage)' : ''}',
     );
@@ -34,17 +32,44 @@ class ApiClient {
       'reportId': newReport.id,
       'timestamp': DateTime.now().toIso8601String(),
     });
-    debugPrint('[API] POST /reports - logged audit for report ID: ${newReport.id}');
+    debugPrint(
+      '[API] POST /reports - logged audit for report ID: ${newReport.id}',
+    );
     return newReport;
   }
 
-  Future<Report> updateReport(
-    String id,
-    String title,
-    String description,
-  ) async {
-    // TODO: Implement API call
-    throw UnimplementedError();
+  Future<Report> updateReport(String id, String title, String description) async {
+    debugPrint('[API] PUT /reports/$id - updating report with title: "$title"');
+    final docRef = _reports.doc(id);
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      debugPrint('[API] PUT /reports/$id - report not found');
+      throw Exception('Report not found');
+    }
+
+    final updatedReport = Report(
+      id: id,
+      title: title,
+      description: description,
+      createdAt: DateTime.parse(docSnapshot.data()!['createdAt']),
+      updatedAt: DateTime.now(),
+      isDeleted: docSnapshot.data()!['isDeleted'] ?? false,
+    );
+
+    await docRef.set(updatedReport.toMap());
+    debugPrint('[API] PUT /reports/$id - updated report with ID: $id');
+
+    await _audit_logs.add({
+      'action': 'update',
+      'reportId': id,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+    debugPrint(
+      '[API] PUT /reports/$id - logged audit for report ID: $id',
+    );
+
+    return updatedReport;
   }
 
   Future<void> deleteReport(String id) async {
