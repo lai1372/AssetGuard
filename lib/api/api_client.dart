@@ -25,8 +25,17 @@ class ApiClient {
   }
 
   Future<Report> createReport(String title, String description) async {
-    // TODO: Implement API call
-    throw UnimplementedError();
+    debugPrint('[API] POST /reports - creating report with title: "$title"');
+    final newReport = Report(title: title, description: description);
+    await _reports.doc(newReport.id).set(newReport.toMap());
+    debugPrint('[API] POST /reports - created report with ID: ${newReport.id}');
+    await _audit_logs.add({
+      'action': 'create',
+      'reportId': newReport.id,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+    debugPrint('[API] POST /reports - logged audit for report ID: ${newReport.id}');
+    return newReport;
   }
 
   Future<Report> updateReport(
