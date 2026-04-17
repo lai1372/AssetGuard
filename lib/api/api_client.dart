@@ -73,7 +73,25 @@ class ApiClient {
   }
 
   Future<void> deleteReport(String id) async {
-    // TODO: Implement API call
-    throw UnimplementedError();
+    debugPrint('[API] DELETE /reports/$id - deleting report');
+    final docRef = _reports.doc(id);
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      debugPrint('[API] DELETE /reports/$id - report not found');
+      throw Exception('Report not found');
+    }
+
+    await docRef.update({'isDeleted': true});
+    debugPrint('[API] DELETE /reports/$id - marked report as deleted');
+
+    await _audit_logs.add({
+      'action': 'delete',
+      'reportId': id,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+    debugPrint(
+      '[API] DELETE /reports/$id - logged audit for report ID: $id',
+    );
   }
 }
