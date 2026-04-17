@@ -77,4 +77,31 @@ void main() {
       expect(result.isEmpty, true);
     });
   });
+
+  group('ApiClient Integration Tests - createReport', () {
+    late FakeFirebaseFirestore fakeFirestore;
+    late ApiClient apiClient;
+
+    setUp(() {
+      fakeFirestore = FakeFirebaseFirestore();
+      apiClient = ApiClient(fakeFirestore);
+    });
+
+    test('creates a new report and logs audit', () async {
+      // Act
+      final newReport = await apiClient.createReport('New Report', 'New Description');
+
+      // Assert
+      final docSnapshot = await fakeFirestore.collection('reports').doc(newReport.id).get();
+      expect(docSnapshot.exists, true);
+      expect(docSnapshot.data()!['title'], 'New Report');
+      expect(docSnapshot.data()!['description'], 'New Description');
+      expect(docSnapshot.data()!['isDeleted'], false);
+
+      // Assert
+      final auditLogsSnapshot = await fakeFirestore.collection('audit_logs').where('reportId', isEqualTo: newReport.id).get();
+      expect(auditLogsSnapshot.docs.length, 1);
+      expect(auditLogsSnapshot.docs.first.data()['action'], 'create');
+    });
+  });
 }
