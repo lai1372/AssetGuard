@@ -8,7 +8,7 @@
 PRODUCT_NAME = asset_guard
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.assetGuard
+PRODUCT_BUNDLE_IDENTIFIER = com.assetguard.app2026
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
