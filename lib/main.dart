@@ -48,15 +48,13 @@ class MyApp extends StatelessWidget {
           // Still loading
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: Center(child: CircularProgressIndicator()),
             );
           }
 
           // User is logged in
           if (snapshot.hasData) {
-            return const HomeScreen();
+            return HomeScreen(reportRepository: reportRepository);
           }
 
           // User is not logged in
@@ -65,7 +63,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/home': (context) => HomeScreen(reportRepository: reportRepository),
       },
     );
   }
