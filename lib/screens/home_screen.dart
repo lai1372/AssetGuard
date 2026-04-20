@@ -4,6 +4,7 @@ import 'package:asset_guard/repositories/report_repository.dart';
 import 'package:asset_guard/models/report.dart';
 import 'package:asset_guard/screens/report_detail_screen.dart';
 import 'package:asset_guard/screens/create_report_screen.dart';
+import 'package:asset_guard/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ReportRepository reportRepository;
@@ -16,13 +17,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<void> _logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    if (context.mounted) {
-      Navigator.of(context).pushReplacementNamed('/login');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -33,9 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-            tooltip: 'Logout',
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            },
+            tooltip: 'Profile',
           ),
         ],
       ),
