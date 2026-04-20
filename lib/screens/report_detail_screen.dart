@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:asset_guard/models/report.dart';
+import 'package:asset_guard/repositories/report_repository.dart';
 
 class ReportDetailScreen extends StatelessWidget {
   final Report report;
+  final ReportRepository reportRepository;
 
-  const ReportDetailScreen({Key? key, required this.report}) : super(key: key);
+  const ReportDetailScreen({
+    Key? key,
+    required this.report,
+    required this.reportRepository,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +18,13 @@ class ReportDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Report Details'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _showDeleteConfirmation(context),
+            tooltip: 'Delete',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -233,6 +246,68 @@ class ReportDetailScreen extends StatelessWidget {
     } else {
       return 'on ${date.day}/${date.month}/${date.year}';
     }
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Report'),
+        content: Text(
+          'Are you sure you want to delete "${report.title}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext); // Close dialog
+
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    const Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                await reportRepository.deleteReport(report.id);
+
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading
+                  Navigator.pop(context); // Go back to home
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Report "${report.title}" deleted successfully',
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete report: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatFullDate(DateTime date) {
