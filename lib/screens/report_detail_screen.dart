@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:asset_guard/models/report.dart';
 import 'package:asset_guard/repositories/report_repository.dart';
+import 'package:asset_guard/screens/edit_report_screen.dart';
 
 class ReportDetailScreen extends StatelessWidget {
   final Report report;
@@ -19,6 +20,25 @@ class ReportDetailScreen extends StatelessWidget {
         title: const Text('Report Details'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditReportScreen(
+                    report: report,
+                    reportRepository: reportRepository,
+                  ),
+                ),
+              );
+
+              if (result == true && context.mounted) {
+                Navigator.pop(context, true);
+              }
+            },
+            tooltip: 'Edit',
+          ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () => _showDeleteConfirmation(context),

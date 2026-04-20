@@ -182,8 +182,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                           trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ReportDetailScreen(
@@ -192,6 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             );
+
+                            if (result == true && mounted) {
+                              setState(() {});
+                            }
                           },
                         ),
                       );
@@ -208,12 +212,11 @@ class _HomeScreenState extends State<HomeScreen> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CreateReportScreen(
-                reportRepository: widget.reportRepository,
-              ),
+              builder: (context) =>
+                  CreateReportScreen(reportRepository: widget.reportRepository),
             ),
           );
-          
+
           // Refresh the list if a report was created
           if (result == true && mounted) {
             setState(() {});
