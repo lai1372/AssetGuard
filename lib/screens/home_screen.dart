@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asset_guard/repositories/report_repository.dart';
 import 'package:asset_guard/models/report.dart';
 import 'package:asset_guard/screens/report_detail_screen.dart';
+import 'package:asset_guard/screens/create_report_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ReportRepository reportRepository;
@@ -203,8 +204,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Navigate to create report screen
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateReportScreen(
+                reportRepository: widget.reportRepository,
+              ),
+            ),
+          );
+          
+          // Refresh the list if a report was created
+          if (result == true && mounted) {
+            setState(() {});
+          }
         },
         icon: const Icon(Icons.add),
         label: const Text('New Report'),
