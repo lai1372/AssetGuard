@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:asset_guard/repositories/report_repository.dart';
 import 'package:asset_guard/models/report.dart';
+import 'package:asset_guard/screens/report_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final ReportRepository reportRepository;
@@ -181,7 +182,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
-                            // TODO: Navigate to report details
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ReportDetailScreen(report: report),
+                              ),
+                            );
                           },
                         ),
                       );
