@@ -80,7 +80,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 'You\'re offline. Your report will be saved locally and synced when online.',
               ),
               backgroundColor: Colors.orange.shade100,
-              leading: const Icon(Icons.wifi_off, color: Colors.orange),
+              leading: Icon(Icons.wifi_off, color: Colors.orange.shade700),
               actions: [const SizedBox.shrink()],
             ),
           Expanded(
@@ -132,6 +132,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     controller: _titleController,
                     decoration: InputDecoration(
                       hintText: 'Enter report title',
+                      helperText: 'A brief title for your report',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -163,6 +164,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     controller: _descriptionController,
                     decoration: InputDecoration(
                       hintText: 'Enter report description',
+                      helperText:
+                          'Provide detailed information about the report',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

@@ -164,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
           // Sign out button
           Card(
             child: ListTile(
-              leading: const Icon(Icons.logout, color: Colors.orange),
+              leading: Icon(Icons.logout, color: Colors.orange.shade700),
               title: const Text('Sign Out'),
               subtitle: const Text('Sign out of your account'),
               onTap: () => _signOut(context),
