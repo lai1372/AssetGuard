@@ -89,17 +89,26 @@ void main() {
 
     test('creates a new report and logs audit', () async {
       // Act
-      final newReport = await apiClient.createReport('New Report', 'New Description');
+      final newReport = await apiClient.createReport(
+        'New Report',
+        'New Description',
+      );
 
       // Assert
-      final docSnapshot = await fakeFirestore.collection('reports').doc(newReport.id).get();
+      final docSnapshot = await fakeFirestore
+          .collection('reports')
+          .doc(newReport.id)
+          .get();
       expect(docSnapshot.exists, true);
       expect(docSnapshot.data()!['title'], 'New Report');
       expect(docSnapshot.data()!['description'], 'New Description');
       expect(docSnapshot.data()!['isDeleted'], false);
 
       // Assert
-      final auditLogsSnapshot = await fakeFirestore.collection('audit_logs').where('reportId', isEqualTo: newReport.id).get();
+      final auditLogsSnapshot = await fakeFirestore
+          .collection('audit_logs')
+          .where('reportId', isEqualTo: newReport.id)
+          .get();
       expect(auditLogsSnapshot.docs.length, 1);
       expect(auditLogsSnapshot.docs.first.data()['action'], 'create');
     });
@@ -126,30 +135,44 @@ void main() {
       });
 
       // Act
-      final updatedReport = await apiClient.updateReport('1', 'Report 1 (Updated)', 'Description 1 (Updated)');
+      await apiClient.updateReport(
+        '1',
+        'Report 1 (Updated)',
+        'Description 1 (Updated)',
+      );
 
       // Assert
-      final docSnapshot = await fakeFirestore.collection('reports').doc('1').get();
+      final docSnapshot = await fakeFirestore
+          .collection('reports')
+          .doc('1')
+          .get();
       expect(docSnapshot.exists, true);
       expect(docSnapshot.data()!['title'], 'Report 1 (Updated)');
       expect(docSnapshot.data()!['description'], 'Description 1 (Updated)');
 
       // Assert
-      final auditLogsSnapshot = await fakeFirestore.collection('audit_logs').where('reportId', isEqualTo: '1').get();
+      final auditLogsSnapshot = await fakeFirestore
+          .collection('audit_logs')
+          .where('reportId', isEqualTo: '1')
+          .get();
       expect(auditLogsSnapshot.docs.length, 1);
       expect(auditLogsSnapshot.docs.first.data()['action'], 'update');
     });
 
     test('throws exception when report does not exist', () async {
-
-      // Arrange 
-      final docSnapshot = await fakeFirestore.collection('reports').doc('nonexistent').get();
+      // Arrange
+      final docSnapshot = await fakeFirestore
+          .collection('reports')
+          .doc('nonexistent')
+          .get();
 
       expect(docSnapshot.exists, false);
 
       // Act & Assert
-      expect(() => apiClient.updateReport('nonexistent', 'Title', 'Description'), throwsException);
-
+      expect(
+        () => apiClient.updateReport('nonexistent', 'Title', 'Description'),
+        throwsException,
+      );
     });
   });
 
@@ -177,19 +200,28 @@ void main() {
       await apiClient.deleteReport('1');
 
       // Assert
-      final docSnapshot = await fakeFirestore.collection('reports').doc('1').get();
+      final docSnapshot = await fakeFirestore
+          .collection('reports')
+          .doc('1')
+          .get();
       expect(docSnapshot.exists, true);
       expect(docSnapshot.data()!['isDeleted'], true);
 
       // Assert
-      final auditLogsSnapshot = await fakeFirestore.collection('audit_logs').where('reportId', isEqualTo: '1').get();
+      final auditLogsSnapshot = await fakeFirestore
+          .collection('audit_logs')
+          .where('reportId', isEqualTo: '1')
+          .get();
       expect(auditLogsSnapshot.docs.length, 1);
       expect(auditLogsSnapshot.docs.first.data()['action'], 'delete');
     });
 
     test('throws exception when report does not exist', () async {
-      // Arrange 
-      final docSnapshot = await fakeFirestore.collection('reports').doc('nonexistent').get();
+      // Arrange
+      final docSnapshot = await fakeFirestore
+          .collection('reports')
+          .doc('nonexistent')
+          .get();
 
       expect(docSnapshot.exists, false);
 
