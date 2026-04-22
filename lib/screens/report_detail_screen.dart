@@ -3,7 +3,7 @@ import 'package:asset_guard/models/report.dart';
 import 'package:asset_guard/repositories/report_repository.dart';
 import 'package:asset_guard/screens/edit_report_screen.dart';
 
-class ReportDetailScreen extends StatelessWidget {
+class ReportDetailScreen extends StatefulWidget {
   final Report report;
   final ReportRepository reportRepository;
 
@@ -12,6 +12,13 @@ class ReportDetailScreen extends StatelessWidget {
     required this.report,
     required this.reportRepository,
   }) : super(key: key);
+
+  @override
+  State<ReportDetailScreen> createState() => _ReportDetailScreenState();
+}
+
+class _ReportDetailScreenState extends State<ReportDetailScreen> {
+  bool _isOffline = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +34,8 @@ class ReportDetailScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => EditReportScreen(
-                    report: report,
-                    reportRepository: reportRepository,
+                    report: widget.report,
+                    reportRepository: widget.reportRepository,
                   ),
                 ),
               );
@@ -77,7 +84,7 @@ class ReportDetailScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                report.title,
+                                widget.report.title,
                                 style: Theme.of(context).textTheme.headlineSmall
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
@@ -91,7 +98,7 @@ class ReportDetailScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Created ${_formatDate(report.createdAt)}',
+                                    'Created ${_formatDate(widget.report.createdAt)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey.shade600,
@@ -104,7 +111,7 @@ class ReportDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (report.updatedAt != report.createdAt) ...[
+                    if (widget.report.updatedAt != widget.report.createdAt) ...[
                       const SizedBox(height: 12),
                       Divider(color: Colors.grey.shade300),
                       const SizedBox(height: 8),
@@ -117,7 +124,7 @@ class ReportDetailScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Last updated ${_formatDate(report.updatedAt)}',
+                            'Last updated ${_formatDate(widget.report.updatedAt)}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade600,
@@ -145,7 +152,7 @@ class ReportDetailScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Text(
-                  report.description,
+                  widget.report.description,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.copyWith(height: 1.6),
@@ -171,22 +178,22 @@ class ReportDetailScreen extends StatelessWidget {
                       context,
                       icon: Icons.fingerprint,
                       label: 'Report ID',
-                      value: report.id,
+                      value: widget.report.id,
                     ),
                     const SizedBox(height: 16),
                     _buildInfoRow(
                       context,
                       icon: Icons.calendar_today,
                       label: 'Created',
-                      value: _formatFullDate(report.createdAt),
+                      value: _formatFullDate(widget.report.createdAt),
                     ),
-                    if (report.updatedAt != report.createdAt) ...[
+                    if (widget.report.updatedAt != widget.report.createdAt) ...[
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         context,
                         icon: Icons.update,
                         label: 'Last Updated',
-                        value: _formatFullDate(report.updatedAt),
+                        value: _formatFullDate(widget.report.updatedAt),
                       ),
                     ],
                     const SizedBox(height: 16),
@@ -194,8 +201,10 @@ class ReportDetailScreen extends StatelessWidget {
                       context,
                       icon: Icons.info_outline,
                       label: 'Status',
-                      value: report.isDeleted ? 'Deleted' : 'Active',
-                      valueColor: report.isDeleted ? Colors.red : Colors.green,
+                      value: widget.report.isDeleted ? 'Deleted' : 'Active',
+                      valueColor: widget.report.isDeleted
+                          ? Colors.red
+                          : Colors.green,
                     ),
                   ],
                 ),
@@ -274,7 +283,7 @@ class ReportDetailScreen extends StatelessWidget {
       builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Report'),
         content: Text(
-          'Are you sure you want to delete "${report.title}"? This action cannot be undone.',
+          'Are you sure you want to delete "${widget.report.title}"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -282,28 +291,21 @@ class ReportDetailScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () {
               Navigator.pop(dialogContext); // Close dialog
 
-              // Show loading indicator
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-
               try {
-                await reportRepository.deleteReport(report.id);
+                widget.reportRepository.deleteReport(widget.report.id);
 
                 if (context.mounted) {
-                  Navigator.pop(context); // Close loading
                   Navigator.pop(context); // Go back to home
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        'Report "${report.title}" deleted successfully',
+                        _isOffline
+                            ? 'Report "${widget.report.title}" marked for deletion. It will be removed when you\'re online.'
+                            : 'Report "${widget.report.title}" deleted successfully',
                       ),
                       backgroundColor: Colors.green,
                     ),
@@ -311,8 +313,6 @@ class ReportDetailScreen extends StatelessWidget {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  Navigator.pop(context); // Close loading
-
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to delete report: $e'),

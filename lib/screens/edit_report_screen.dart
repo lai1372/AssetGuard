@@ -21,6 +21,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   bool _isLoading = false;
+  bool _isOffline = false;
 
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
     super.dispose();
   }
 
-  Future<void> _updateReport() async {
+  void _updateReport() {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -48,7 +49,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
     });
 
     try {
-      await widget.reportRepository.updateReport(
+      widget.reportRepository.updateReport(
         widget.report.id,
         _titleController.text.trim(),
         _descriptionController.text.trim(),
@@ -56,8 +57,12 @@ class _EditReportScreenState extends State<EditReportScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Report updated successfully'),
+          SnackBar(
+            content: Text(
+              _isOffline
+                  ? 'Report saved locally. It will sync when you\'re online.'
+                  : 'Report updated successfully',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -91,9 +96,19 @@ class _EditReportScreenState extends State<EditReportScreen> {
         backgroundColor: colorScheme.secondary,
         foregroundColor: colorScheme.onSecondary,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+      body: Column(
+        children: [
+          if (_isOffline)
+            MaterialBanner(
+              content: const Text(
+                'You\'re offline. Your changes will be saved locally and synced when online.',
+              ),
+              backgroundColor: Colors.orange.shade100,
+              leading: const Icon(Icons.wifi_off, color: Colors.orange),
+              actions: [const SizedBox.shrink()],
+            ),
+          Expanded(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
@@ -170,6 +185,9 @@ class _EditReportScreenState extends State<EditReportScreen> {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

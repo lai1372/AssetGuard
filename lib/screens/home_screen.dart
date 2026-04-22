@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:asset_guard/repositories/report_repository.dart';
 import 'package:asset_guard/models/report.dart';
 import 'package:asset_guard/screens/report_detail_screen.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isOffline = false;
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -39,7 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          // User info header
+          if (_isOffline)
+            MaterialBanner(
+              content: const Text(
+                'You\'re offline. Changes will sync when you\'re back online.',
+              ),
+              backgroundColor: Colors.orange.shade100,
+              leading: const Icon(Icons.wifi_off, color: Colors.orange),
+              actions: [const SizedBox.shrink()],
+            ),
           Container(
             padding: const EdgeInsets.all(16),
             color: Theme.of(context).colorScheme.primaryContainer,
@@ -59,8 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Reports list
           Expanded(
-            child: FutureBuilder<List<Report>>(
-              future: widget.reportRepository.getAllReports(),
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection('reports')
+                  .where('isDeleted', isEqualTo: false)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -92,7 +105,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
-                final reports = snapshot.data ?? [];
+                final reports = (snapshot.data?.docs ?? [])
+                    .map((doc) => Report.fromMap(doc.data()))
+                    .toList();
+
+                final isFromCache =
+                    snapshot.data?.metadata.isFromCache ?? false;
+                if (isFromCache != _isOffline) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _isOffline = isFromCache;
+                      });
+                    }
+                  });
+                }
 
                 if (reports.isEmpty) {
                   return Center(
@@ -120,85 +147,76 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    setState(() {});
-                  },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: reports.length,
-                    itemBuilder: (context, index) {
-                      final report = reports[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        elevation: 2,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          leading: CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.primary,
-                            child: const Icon(
-                              Icons.description,
-                              color: Colors.white,
-                            ),
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: reports.length,
+                  itemBuilder: (context, index) {
+                    final report = reports[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      elevation: 2,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          child: const Icon(
+                            Icons.description,
+                            color: Colors.white,
                           ),
-                          title: Text(
-                            report.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                        ),
+                        title: Text(
+                          report.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 8),
-                              Text(
-                                report.description,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.access_time,
-                                    size: 14,
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8),
+                            Text(
+                              report.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: 14,
+                                  color: Colors.grey.shade600,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  _formatDate(report.createdAt),
+                                  style: TextStyle(
+                                    fontSize: 12,
                                     color: Colors.grey.shade600,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    _formatDate(report.createdAt),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ReportDetailScreen(
-                                  report: report,
-                                  reportRepository: widget.reportRepository,
                                 ),
-                              ),
-                            );
-
-                            if (result == true && mounted) {
-                              setState(() {});
-                            }
-                          },
+                              ],
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReportDetailScreen(
+                                report: report,
+                                reportRepository: widget.reportRepository,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -206,19 +224,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.push(
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
                   CreateReportScreen(reportRepository: widget.reportRepository),
             ),
           );
-
-          // Refresh the list if a report was created
-          if (result == true && mounted) {
-            setState(() {});
-          }
         },
         icon: const Icon(Icons.add),
         label: const Text('New Report'),
