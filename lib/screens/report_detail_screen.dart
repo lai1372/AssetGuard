@@ -44,12 +44,12 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 Navigator.pop(context, true);
               }
             },
-            tooltip: 'Edit',
+            tooltip: 'Edit this report',
           ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () => _showDeleteConfirmation(context),
-            tooltip: 'Delete',
+            tooltip: 'Delete this report',
           ),
         ],
       ),
@@ -94,14 +94,14 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                                   Icon(
                                     Icons.access_time,
                                     size: 16,
-                                    color: Colors.grey.shade600,
+                                    color: Colors.grey.shade800,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Created ${_formatDate(widget.report.createdAt)}',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.grey.shade600,
+                                      color: Colors.grey.shade800,
                                     ),
                                   ),
                                 ],
@@ -113,21 +113,21 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     ),
                     if (widget.report.updatedAt != widget.report.createdAt) ...[
                       const SizedBox(height: 12),
-                      Divider(color: Colors.grey.shade300),
+                      Divider(color: Colors.grey.shade400),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Icon(
                             Icons.update,
                             size: 16,
-                            color: Colors.grey.shade600,
+                            color: Colors.grey.shade800,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Last updated ${_formatDate(widget.report.updatedAt)}',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey.shade600,
+                              color: Colors.grey.shade800,
                             ),
                           ),
                         ],
@@ -226,7 +226,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.grey.shade600),
+        Icon(icon, size: 20, color: Colors.grey.shade800),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -236,7 +236,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: Colors.grey.shade800,
                   fontWeight: FontWeight.w500,
                 ),
               ),

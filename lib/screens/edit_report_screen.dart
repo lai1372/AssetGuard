@@ -104,7 +104,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
                 'You\'re offline. Your changes will be saved locally and synced when online.',
               ),
               backgroundColor: Colors.orange.shade100,
-              leading: const Icon(Icons.wifi_off, color: Colors.orange),
+              leading: Icon(Icons.wifi_off, color: Colors.orange.shade700),
               actions: [const SizedBox.shrink()],
             ),
           Expanded(
