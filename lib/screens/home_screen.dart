@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:asset_guard/repositories/report_repository.dart';
 import 'package:asset_guard/models/report.dart';
 import 'package:asset_guard/screens/report_detail_screen.dart';
@@ -19,6 +20,50 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isOffline = false;
+  late Connectivity _connectivity;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivity = Connectivity();
+
+    // Check initial connectivity
+    _checkConnectivity();
+
+    // Listen to connectivity changes
+    _connectivity.onConnectivityChanged.listen((result) {
+      _updateConnectivityStatus(result);
+    });
+  }
+
+  Future<void> _checkConnectivity() async {
+    try {
+      final result = await _connectivity.checkConnectivity();
+      _updateConnectivityStatus(result);
+    } catch (e) {
+      // If check fails, assume offline
+      if (mounted) {
+        setState(() {
+          _isOffline = true;
+        });
+      }
+    }
+  }
+
+  void _updateConnectivityStatus(ConnectivityResult result) {
+    final isOffline = result == ConnectivityResult.none;
+    if (mounted && isOffline != _isOffline) {
+      setState(() {
+        _isOffline = isOffline;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -108,18 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 final reports = (snapshot.data?.docs ?? [])
                     .map((doc) => Report.fromMap(doc.data()))
                     .toList();
-
-                final isFromCache =
-                    snapshot.data?.metadata.isFromCache ?? false;
-                if (isFromCache != _isOffline) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _isOffline = isFromCache;
-                      });
-                    }
-                  });
-                }
 
                 if (reports.isEmpty) {
                   return Center(
