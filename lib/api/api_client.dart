@@ -26,14 +26,14 @@ class ApiClient {
     debugPrint('[API] POST /reports - creating report with title: "$title"');
     final newReport = Report(title: title, description: description);
     await _reports.doc(newReport.id).set(newReport.toMap());
-    debugPrint('[API] POST /reports - created report with ID: ${newReport.id}');
+    debugPrint('[API] POST /reports - created report with title: "${newReport.title}"');
     await _audit_logs.add({
       'action': 'create',
-      'reportId': newReport.id,
+      'reportTitle': newReport.title,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
-      '[API] POST /reports - logged audit for report ID: ${newReport.id}',
+      '[API] POST /reports - logged audit for report title: "${newReport.title}"',
     );
     return newReport;
   }
@@ -62,11 +62,11 @@ class ApiClient {
 
     await _audit_logs.add({
       'action': 'update',
-      'reportId': id,
+      'reportTitle': title,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
-      '[API] PUT /reports/$id - logged audit for report ID: $id',
+      '[API] PUT /reports/$id - logged audit for report title: "$title"',
     );
 
     return updatedReport;
@@ -87,11 +87,11 @@ class ApiClient {
 
     await _audit_logs.add({
       'action': 'delete',
-      'reportId': id,
+      'reportTitle': docSnapshot.data()!['title'],
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
-      '[API] DELETE /reports/$id - logged audit for report ID: $id',
+      '[API] DELETE /reports/$id - logged audit for report title: "${docSnapshot.data()!['title']}"',
     );
   }
 }
