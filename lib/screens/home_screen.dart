@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _updateConnectivityStatus(result);
     });
   }
-
+  // Method to check the current connectivity status and update the _isOffline state accordingly, with error handling to assume offline status if the check fails
   Future<void> _checkConnectivity() async {
     try {
       final result = await _connectivity.checkConnectivity();
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
   }
-
+  // Method to update the connectivity status based on the ConnectivityResult, ensuring that the state is only updated if the widget is still mounted and the offline status has changed to avoid unnecessary rebuilds
   void _updateConnectivityStatus(ConnectivityResult result) {
     final isOffline = result == ConnectivityResult.none;
     if (mounted && isOffline != _isOffline) {
@@ -86,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
+          // Show an offline banner when the user is not connected to the internet, with a clear message and an icon to indicate the offline status
           if (_isOffline)
             MaterialBanner(
               content: const Text(
@@ -102,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const Icon(Icons.person, size: 32),
                 const SizedBox(width: 12),
+                // Display the logged-in user's email in the header
                 Expanded(
                   child: Text(
                     'Logged in as: ${user?.email}',

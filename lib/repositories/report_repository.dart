@@ -1,9 +1,10 @@
 import 'package:asset_guard/api/api_client.dart';
 import 'package:asset_guard/models/report.dart';
 
+// Repository class that abstracts the data layer and interacts with the ApiClient
 class ReportRepository {
   final ApiClient apiClient;
-
+  
   ReportRepository({required this.apiClient});
 
   Future<List<Report>> getAllReports() async {

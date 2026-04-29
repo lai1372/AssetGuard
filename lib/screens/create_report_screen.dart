@@ -11,6 +11,7 @@ class CreateReportScreen extends StatefulWidget {
   State<CreateReportScreen> createState() => _CreateReportScreenState();
 }
 
+// Stateful widget for creating a new report with form validation, loading state, and offline support
 class _CreateReportScreenState extends State<CreateReportScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();

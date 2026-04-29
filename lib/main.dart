@@ -10,7 +10,7 @@ import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // Start Firebase and handle any potential errors during startup to ensure the app can still run even if Firebase fails, provide feedback in the console for debugging purposes
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -19,7 +19,7 @@ void main() async {
   } catch (e) {
     debugPrint('Firebase initialization error: $e');
   }
-
+  // Enable Firestore offline persistence with unlimited cache size to allow users to create and view reports even when they are offline, and ensure that data is synced when they come back online
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
@@ -27,7 +27,7 @@ void main() async {
 
   runApp(const MyApp());
 }
-
+// Main application widget that initializes the ApiClient and ReportRepository, and sets up routing and authentication state management to show the appropriate screens based on whether the user is logged in or not
 class MyApp extends StatelessWidget {
   const MyApp();
 

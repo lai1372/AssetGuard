@@ -18,11 +18,13 @@ class ReportDetailScreen extends StatefulWidget {
 }
 
 class _ReportDetailScreenState extends State<ReportDetailScreen> {
+  // Track offline status to provide user feedback when actions are performed while offline
   bool _isOffline = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar with edit and delete actions, providing tooltips for accessibility and user guidance
       appBar: AppBar(
         title: const Text('Report Details'),
         centerTitle: true,
@@ -46,6 +48,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
             },
             tooltip: 'Edit this report',
           ),
+          // Delete button with confirmation dialog to prevent accidental deletions
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () => _showDeleteConfirmation(context),
@@ -111,6 +114,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         ),
                       ],
                     ),
+                    // Show last updated time if it differs from created time, providing users with context on when the report was last modified
                     if (widget.report.updatedAt != widget.report.createdAt) ...[
                       const SizedBox(height: 12),
                       Divider(color: Colors.grey.shade400),
@@ -255,7 +259,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
       ],
     );
   }
-
+  // Format the date to show relative time (e.g., "just now", "5m ago", "yesterday") for better user experience and context on when the report was created or updated
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
@@ -277,6 +281,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
     }
   }
 
+  // Show a confirmation dialog before deleting a report to prevent accidental deletions and provide feedback on the action taken, especially when offline
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -329,7 +334,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
       ),
     );
   }
-
+  
   String _formatFullDate(DateTime date) {
     final months = [
       'January',

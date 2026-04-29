@@ -8,11 +8,13 @@ class ApiClient {
   ApiClient([FirebaseFirestore? firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  // Private getters for Firestore collections
   CollectionReference<Map<String, dynamic>> get _reports =>
       _firestore.collection('reports');
   CollectionReference<Map<String, dynamic>> get _audit_logs =>
       _firestore.collection('audit_logs');
 
+  // API methods for CRUD operations on reports and audit logging with detailed debug statements
   Future<List<Report>> getAllReports() async {
     debugPrint('[API] GET /reports - fetching all reports');
     final snapshot = await _reports.where('isDeleted', isEqualTo: false).get();
@@ -30,6 +32,7 @@ class ApiClient {
     await _audit_logs.add({
       'action': 'create',
       'reportTitle': newReport.title,
+      'reportId': newReport.id,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
@@ -63,6 +66,7 @@ class ApiClient {
     await _audit_logs.add({
       'action': 'update',
       'reportTitle': title,
+      'reportId': id,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
@@ -88,6 +92,7 @@ class ApiClient {
     await _audit_logs.add({
       'action': 'delete',
       'reportTitle': docSnapshot.data()!['title'],
+      'reportId': id,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
