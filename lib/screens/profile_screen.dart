@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'data_privacy_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -189,6 +190,28 @@ class ProfileScreen extends StatelessWidget {
                 'Permanently delete your account and all data',
               ),
               onTap: () => _deleteAccount(context),
+            ),
+          ),
+           // Data Privacy section
+          Text(
+            'Data Privacy',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Data Privacy button
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.privacy_tip, color: Colors.blue.shade700),
+              title: const Text('Data Privacy'),
+              subtitle: const Text('View our data privacy policy'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataPrivacyScreen()),
+              ),
             ),
           ),
         ],
