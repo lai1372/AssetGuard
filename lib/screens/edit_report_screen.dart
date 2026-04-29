@@ -23,6 +23,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
   bool _isLoading = false;
   bool _isOffline = false;
 
+  // Initialize the text controllers with the existing report data to allow editing 
   @override
   void initState() {
     super.initState();
@@ -32,6 +33,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
     );
   }
 
+  // Dispose of the text controllers to free up resources when the widget disposes
   @override
   void dispose() {
     _titleController.dispose();
@@ -54,7 +56,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
         _titleController.text.trim(),
         _descriptionController.text.trim(),
       );
-
+      // Provide feedback to the user on successful update, especially when offline, and navigate back to the previous screen
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -68,6 +70,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
         );
         Navigator.of(context).pop(true);
       }
+      // Handle errors gracefully by showing an error message to the user if the update fails, and ensure the loading state is reset
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -123,6 +126,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
                         hintText: 'Enter report title',
                       ),
                       maxLength: 100,
+                      // Validate the title field to ensure it is not empty and meets minimum length requirements for better data integrity
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter a title';
@@ -144,6 +148,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
                       maxLines: 8,
                       maxLength: 1000,
                       validator: (value) {
+                        // Validate the description field to ensure it is not empty and meets minimum length requirements 
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter a description';
                         }

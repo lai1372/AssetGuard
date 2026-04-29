@@ -8,11 +8,13 @@ class ApiClient {
   ApiClient([FirebaseFirestore? firestore])
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  // Private getters for Firestore collections
   CollectionReference<Map<String, dynamic>> get _reports =>
       _firestore.collection('reports');
   CollectionReference<Map<String, dynamic>> get _audit_logs =>
       _firestore.collection('audit_logs');
 
+  // API methods for CRUD operations on reports and audit logging with detailed debug statements
   Future<List<Report>> getAllReports() async {
     debugPrint('[API] GET /reports - fetching all reports');
     final snapshot = await _reports.where('isDeleted', isEqualTo: false).get();
@@ -26,14 +28,15 @@ class ApiClient {
     debugPrint('[API] POST /reports - creating report with title: "$title"');
     final newReport = Report(title: title, description: description);
     await _reports.doc(newReport.id).set(newReport.toMap());
-    debugPrint('[API] POST /reports - created report with ID: ${newReport.id}');
+    debugPrint('[API] POST /reports - created report with title: "${newReport.title}"');
     await _audit_logs.add({
       'action': 'create',
+      'reportTitle': newReport.title,
       'reportId': newReport.id,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
-      '[API] POST /reports - logged audit for report ID: ${newReport.id}',
+      '[API] POST /reports - logged audit for report title: "${newReport.title}"',
     );
     return newReport;
   }
@@ -62,11 +65,12 @@ class ApiClient {
 
     await _audit_logs.add({
       'action': 'update',
+      'reportTitle': title,
       'reportId': id,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
-      '[API] PUT /reports/$id - logged audit for report ID: $id',
+      '[API] PUT /reports/$id - logged audit for report title: "$title"',
     );
 
     return updatedReport;
@@ -87,11 +91,12 @@ class ApiClient {
 
     await _audit_logs.add({
       'action': 'delete',
+      'reportTitle': docSnapshot.data()!['title'],
       'reportId': id,
       'timestamp': DateTime.now().toIso8601String(),
     });
     debugPrint(
-      '[API] DELETE /reports/$id - logged audit for report ID: $id',
+      '[API] DELETE /reports/$id - logged audit for report title: "${docSnapshot.data()!['title']}"',
     );
   }
 }

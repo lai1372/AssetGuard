@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 class Report {
+  // Unique identifier for the report
   final String id;
   final String title;
   final String description;
@@ -18,7 +19,8 @@ class Report {
   }) : id = id ?? const Uuid().v4(),
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
-
+       
+  // Method to create a copy of the report with updated fields
   Report copyWith({
     String? title,
     String? description,

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  // Sign out the user and navigate to the login screen
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -22,6 +23,7 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  // Delete the user's account after confirmation and handle potential errors including re-authentication requirement
   Future<void> _deleteAccount(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -43,7 +45,8 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
-
+    
+    // If the user confirmed deletion, attempt to delete the account and handle errors
     if (confirmed == true && context.mounted) {
       try {
         final user = FirebaseAuth.instance.currentUser;

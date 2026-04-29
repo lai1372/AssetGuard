@@ -15,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+ // Clean up email and password controllers when the widget is disposed
   @override
   void dispose() {
     _emailController.dispose();
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
 
+    // Attempt to sign in with Firebase Authentication, and catch errors to display user-friendly messages
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -92,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  // Validate email input to ensure it is in a proper format before attempting login
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -116,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock),
                   ),
                   obscureText: true,
+                  // Validate password input to ensure it meets basic requirements before attempting login
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
